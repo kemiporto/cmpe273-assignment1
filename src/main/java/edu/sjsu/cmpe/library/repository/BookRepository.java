@@ -35,13 +35,14 @@ public class BookRepository implements BookRepositoryInterface {
      * This will auto-generate unique ISBN for new books.
      */
     @Override
-    public Book saveBook(Book newBook) {
+	public Book saveBook(Book newBook) {
 	checkNotNull(newBook, "newBook instance must not be null");
 	// Generate new ISBN
 	Long isbn = generateISBNKey();
 	newBook.setIsbn(isbn);
 	// TODO: create and associate other fields such as author
-
+        
+	
 	// Finally, save the new book into the map
 	bookInMemoryMap.putIfAbsent(isbn, newBook);
 
@@ -58,4 +59,14 @@ public class BookRepository implements BookRepositoryInterface {
 	return bookInMemoryMap.get(isbn);
     }
 
+    public Book updateBookByISBN(Long isbn, String status, String newStatus)
+    {
+	// TODO: coisas.
+	return null;
+    }
+
+    public void deleteBookByISBN(Long isbn)
+    {
+	bookInMemoryMap.remove(isbn);
+    }
 }

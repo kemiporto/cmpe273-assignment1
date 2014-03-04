@@ -28,5 +28,24 @@ public interface BookRepositoryInterface {
      */
     Book getBookByISBN(Long isbn);
 
-    // TODO: add other operations here!
+    /**
+     * Update an existing book by ISBN
+     * 
+     * @param isbn
+     *            a valid ISBN
+     * @param status
+     *           a valid status to be changed
+     * @param newStatus
+     *           a valid new status
+     * @return a book instance
+     */
+    Book updateBookByISBN(Long isbn, String status, String newStatus);
+ 
+    /**
+     * Delete an existing book by ISBN
+     * 
+     * @param isbn
+     *            a valid ISBN
+     */
+    void deleteBookByISBN(Long isbn);
 }

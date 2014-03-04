@@ -27,7 +27,7 @@ public class RootResource {
 	LinksDto links = new LinksDto();
 	links.addLink(new LinkDto("create-book", "/books", "POST"));
 
-	return Response.ok(links).build();
+	return Response.ok(links).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 }
 
