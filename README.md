@@ -1,5 +1,5 @@
 RESTful Library Service
-======================
+=======================
 
 $ mvn clean package
 
