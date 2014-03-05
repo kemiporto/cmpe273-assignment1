@@ -9,7 +9,7 @@ import edu.sjsu.cmpe.library.domain.Author;
 public class AuthorDtoSingleElement extends LinksDto {
     private Author author;
     
-    public AuthorDto(Author author)
+    public AuthorDtoSingleElement(Author author)
     {
 	super();
 	this.author = author;

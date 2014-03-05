@@ -8,18 +8,18 @@ import java.util.List;
 
 @JsonPropertyOrder(alphabetic = true)
 
-public class AuthorDtoSingleElement extends LinksDto {
+public class AuthorDtoMultipleElement extends LinksDto {
     private List<Author> authors;
     
-    public AuthorDto(List<Author> authors)
+    public AuthorDtoMultipleElement(List<Author> authors)
     {
 	super();
 	this.authors = authors;
     }
 
-    public Author getAuthor()
+    public List<Author> getAuthors()
     {
-	return author;
+	return authors;
     }
 
     public void setAuthors(List<Author> authors)

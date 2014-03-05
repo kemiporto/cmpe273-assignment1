@@ -22,9 +22,13 @@ import edu.sjsu.cmpe.library.dto.BookDto;
 import edu.sjsu.cmpe.library.repository.BookRepositoryInterface;
 import edu.sjsu.cmpe.library.dto.LinkDto;
 import edu.sjsu.cmpe.library.dto.LinksDto;
+import edu.sjsu.cmpe.library.domain.Author;
+import edu.sjsu.cmpe.library.dto.AuthorDtoSingleElement;
+import edu.sjsu.cmpe.library.dto.AuthorDtoMultipleElement;
 import edu.sjsu.cmpe.library.repository.AuthorRepositoryInterface;
 import edu.sjsu.cmpe.library.domain.Review;
-import edu.sjsu.cmpe.library.dto.ReviewDto;
+import edu.sjsu.cmpe.library.dto.ReviewDtoSingleElement;
+import edu.sjsu.cmpe.library.dto.ReviewDtoMultipleElement;
 import edu.sjsu.cmpe.library.repository.ReviewRepositoryInterface;
 
 @Path("/v1/books")
@@ -81,7 +85,7 @@ public class BookResource {
     public Response viewReviewById(@PathParam("isbn") LongParam isbn, @PathParam("id") LongParam id)
     {
 	Review review = reviewRepository.getReviewById(id.get());
-	ReviewDto reviewResponse = new ReviewDto(review);
+	ReviewDtoSingleElement reviewResponse = new ReviewDtoSingleElement(review);
 	Book book = bookRepository.getBookByISBN(isbn.get());
 
 	reviewResponse.addLink(new LinkDto("view-review", "/books/" + book.getIsbn() + "/reviews/" + id.get(), GET));
@@ -94,9 +98,33 @@ public class BookResource {
     public Response viewAllReviews(@PathParam("isbn") LongParam isbn)
     {
 	Book book = bookRepository.getBookByISBN(isbn.get());
-	ReviewDto reviewResponse = new ReviewDto(book.getReviews());
+	ReviewDtoMultipleElement reviewResponse = new ReviewDtoMultipleElement(book.getReviews());
 
 	return Response.status(200).entity(reviewResponse).build();
+    }
+
+    @GET
+    @Path("/{isbn}/author/{id}")
+    @Timed(name = "view-author")
+    public Response viewAuthor(@PathParam("isbn") LongParam isbn, @PathParam("id") LongParam id)
+    {
+	Author author = authorRepository.getAuthorById(id.get());
+
+	AuthorDtoSingleElement authorResponse = new AuthorDtoSingleElement(author);
+	Book book = bookRepository.getBookByISBN(isbn.get());
+
+	authorResponse.addLink(new LinkDto("view-author", "/book/" + book.getIsbn() + "/author/" + author.getId(), GET));
+	return Response.status(200).entity(authorResponse).build();
+    }
+
+    @GET
+    @Path("/{isbn}/authors")
+    @Timed(name = "view-authors")
+    public Response viewAuthors(@PathParam("isbn") LongParam isbn) {
+	Book book = bookRepository.getBookByISBN(isbn.get());
+	AuthorDtoMultipleElement authorResponse = new AuthorDtoMultipleElement(book.getAuthors());
+
+	return Response.status(200).entity(authorResponse).build();
     }
 
     @POST
