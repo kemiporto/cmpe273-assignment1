@@ -3,6 +3,7 @@ package edu.sjsu.cmpe.library.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.sjsu.cmpe.library.domain.Review;
 import java.util.List;
+import java.util.ArrayList;
 import javax.validation.constraints.*;
 
 public class Book {
@@ -28,6 +29,7 @@ public class Book {
     @JsonProperty (required = true)
     @NotNull(message = "must have a defined authors value. \n\"authors\" : \n\t[{\"name\" : \"author_1's name\"},..., {\"name\" : \"author_n's name\"}].")
     private List<Author> authors;
+    @JsonProperty
     private List<Review> reviews = null;
     
     /**
@@ -52,37 +54,14 @@ public class Book {
 	return title;
     }
 
-    /**
-     * @param title
-     *            the title to set
-     */
-    public void setTitle(String title) {
-	this.title = title;
-    }
-
-    public void setPublicationDate(String publicationDate)
-    {
-	this.publicationDate = publicationDate;
-    }
-
     public String getPublicationDate()
     {
 	return publicationDate;
     }
 
-    public void setLanguage(String language)
-    {
-	this.language = language;
-    }
-
     public String getLanguage()
     {
 	return language;
-    }
-
-    public void setNPages(Integer nPages)
-    {
-	this.nPages = nPages;
     }
 
     public Integer getNPages()
@@ -99,11 +78,20 @@ public class Book {
     {
 	return status;
     }
-
+    
     public boolean hasReview()
     {
-	//return (reviews != null && reviews.size() > 0);
-	return false;
+	return (reviews != null && reviews.size() > 0);
+    }
+
+    public void addReview(Review review) {
+	if(reviews == null)
+	    reviews = new ArrayList<Review>();
+	reviews.add(review);
+    }
+
+    public List<Review> getReviews() {
+	return reviews;
     }
 
     public List<Author> getAuthors() {

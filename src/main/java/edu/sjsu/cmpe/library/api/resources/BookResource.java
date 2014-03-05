@@ -7,6 +7,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -18,10 +19,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import edu.sjsu.cmpe.library.domain.Book;
 import edu.sjsu.cmpe.library.dto.BookDto;
+import edu.sjsu.cmpe.library.repository.BookRepositoryInterface;
 import edu.sjsu.cmpe.library.dto.LinkDto;
 import edu.sjsu.cmpe.library.dto.LinksDto;
-import edu.sjsu.cmpe.library.repository.BookRepositoryInterface;
 import edu.sjsu.cmpe.library.repository.AuthorRepositoryInterface;
+import edu.sjsu.cmpe.library.domain.Review;
+import edu.sjsu.cmpe.library.dto.ReviewDto;
+import edu.sjsu.cmpe.library.repository.ReviewRepositoryInterface;
 
 @Path("/v1/books")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,6 +34,7 @@ public class BookResource {
     /** bookRepository instance */
     private final BookRepositoryInterface bookRepository;
     private final AuthorRepositoryInterface authorRepository;
+    private final ReviewRepositoryInterface reviewRepository;
 
     private static String POST = "POST";
     private static String GET = "GET";
@@ -42,9 +47,12 @@ public class BookResource {
      * @param bookRepository
      *            a BookRepository instance
      */
-    public BookResource(BookRepositoryInterface bookRepository, AuthorRepositoryInterface authorRepository) {
+    public BookResource(BookRepositoryInterface bookRepository, AuthorRepositoryInterface authorRepository,
+			ReviewRepositoryInterface reviewRepository) 
+    {
 	this.bookRepository = bookRepository;
 	this.authorRepository = authorRepository;
+	this.reviewRepository = reviewRepository;
     }
 
     @GET
@@ -67,15 +75,39 @@ public class BookResource {
 	return bookResponse;
     }
 
+    @GET
+    @Path("/{isbn}/reviews/{id}")
+    @Timed(name = "view-review")
+    public Response viewReviewById(@PathParam("isbn") LongParam isbn, @PathParam("id") LongParam id)
+    {
+	Review review = reviewRepository.getReviewById(id.get());
+	ReviewDto reviewResponse = new ReviewDto(review);
+	Book book = bookRepository.getBookByISBN(isbn.get());
+
+	reviewResponse.addLink(new LinkDto("view-review", "/books/" + book.getIsbn() + "/reviews/" + id.get(), GET));
+	return Response.status(200).entity(reviewResponse).build();
+    }
+
+    @GET
+    @Path("/{isbn}/reviews")
+    @Timed(name = "view-all-reviews")
+    public Response viewAllReviews(@PathParam("isbn") LongParam isbn)
+    {
+	Book book = bookRepository.getBookByISBN(isbn.get());
+	ReviewDto reviewResponse = new ReviewDto(book.getReviews());
+
+	return Response.status(200).entity(reviewResponse).build();
+    }
+
     @POST
     @Timed(name = "create-book")
-	public Response createBook(@Valid Book request) {
+    public Response createBook(@Valid Book request) {
 	// Store the new book in the BookRepository so that we can retrieve it.
 	Book savedBook = bookRepository.saveBook(request);
 
-	/*	for(int i = 0; i < request.getAuthors().size(); ++i) {
+	for(int i = 0; i < request.getAuthors().size(); ++i) {
 	    authorRepository.saveAuthor(request.getAuthor(i));
-	    }*/
+	}
 
 	String location = "/books/" + savedBook.getIsbn();
 	BookDto bookResponse = new BookDto(savedBook);
@@ -85,6 +117,21 @@ public class BookResource {
 	bookResponse.addLink(new LinkDto("create-review", location, POST));
 
 	return Response.status(201).entity(bookResponse).build();
+    }
+
+    @POST
+    @Path("/{isbn}/reviews")
+    @Timed(name = "create-review")
+    public Response createReview(@Valid Review review, @PathParam("isbn") LongParam isbn)
+    {
+	Book book = bookRepository.getBookByISBN(isbn.get());
+	checkNotNull(book, "isbn not existent");
+	reviewRepository.saveReview(review);
+	book.addReview(review);
+
+	LinksDto reviewResponse = new LinksDto();
+	reviewResponse.addLink(new LinkDto("view-review", "/books/" + book.getIsbn() + "/reviews/" + review.getId(), GET));
+	return Response.status(201).entity(reviewResponse).build();
     }
 
     @DELETE
@@ -104,10 +151,11 @@ public class BookResource {
     @Path("/{isbn}")
     @Timed(name = "update-book")
 
-    public Response updateBook(@PathParam("isbn") LongParam isbn)
+	public Response updateBook(@PathParam("isbn") LongParam isbn, @QueryParam("status") String newStatus)
     {
 	Book book = bookRepository.getBookByISBN(isbn.get());
-	BookDto bookResponse = new BookDto(book);
+	book.setStatus(newStatus);
+	LinksDto bookResponse = new LinksDto();
 
 	String location = "/books/" + book.getIsbn();
 	bookResponse.addLink(new LinkDto("view-book", location, GET));
