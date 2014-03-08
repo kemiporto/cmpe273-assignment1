@@ -27,7 +27,7 @@ public class Book {
     @JsonProperty
     private String status = Book.AVAILABLE;
     @JsonProperty (required = true)
-    @NotNull(message = "must have a defined authors value. \n\"authors\" : \n\t[{\"name\" : \"author_1's name\"},..., {\"name\" : \"author_n's name\"}].")
+    @NotNull(message = "must have a defined authors value.\n\"authors\" : \n\t[{\"name\" : \"author_1's name\"},..., {\"name\" : \"author_n's name\"}].")
     private List<Author> authors;
     @JsonProperty
     private List<Review> reviews = null;
