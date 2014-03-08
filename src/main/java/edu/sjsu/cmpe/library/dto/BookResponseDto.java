@@ -2,16 +2,15 @@ package edu.sjsu.cmpe.library.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import edu.sjsu.cmpe.library.domain.Book;
+import edu.sjsu.cmpe.library.domain.BookResponse;
 
-@JsonPropertyOrder(alphabetic = true)
-public class BookDto extends LinksDto {
-    private Book book;
+public class BookResponseDto extends LinksDto {
+    private BookResponse book;
 
     /**
      * @param book
      */
-    public BookDto(Book book) {
+    public BookResponseDto(BookResponse book) {
 	super();
 	this.book = book;
     }
@@ -19,7 +18,7 @@ public class BookDto extends LinksDto {
     /**
      * @return the book
      */
-    public Book getBook() {
+    public BookResponse getBook() {
 	return book;
     }
 
@@ -27,7 +26,7 @@ public class BookDto extends LinksDto {
      * @param book
      *            the book to set
      */
-    public void setBook(Book book) {
+    public void setBook(BookResponse book) {
 	this.book = book;
     }
 }

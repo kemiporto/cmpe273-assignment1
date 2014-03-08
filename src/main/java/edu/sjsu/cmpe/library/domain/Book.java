@@ -94,6 +94,11 @@ public class Book {
 	return reviews;
     }
 
+    public Review getReview(int position)
+    {
+	return reviews.get(position);
+    }
+
     public List<Author> getAuthors() {
 	return authors;
     }
