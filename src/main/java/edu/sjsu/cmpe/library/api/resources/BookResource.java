@@ -178,9 +178,16 @@ public class BookResource {
     @PUT
     @Path("/{isbn}")
     @Timed(name = "update-book")
-
-	public Response updateBook(@PathParam("isbn") LongParam isbn, @QueryParam("status") Book.Status newStatus)
+    public Response updateBook(@PathParam("isbn") LongParam isbn, @QueryParam("status") String newStatusValue)
     {
+	Book.Status newStatus = null;
+
+	try {
+	    newStatus = Book.Status.forValue(newStatusValue);
+	} catch (IllegalArgumentException e) {
+	    return Response.status(422).type(MediaType.TEXT_HTML).entity(e.getMessage()).build();
+	}
+
 	Book book = bookRepository.getBookByISBN(isbn.get());
 	book.setStatus(newStatus);
 	LinksDto bookResponse = new LinksDto();
