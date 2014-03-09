@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import edu.sjsu.cmpe.library.domain.BookResponse;
 
+@JsonPropertyOrder({"book", "links"})
 public class BookResponseDto extends LinksDto {
     private BookResponse book;
 

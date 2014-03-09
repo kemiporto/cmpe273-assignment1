@@ -105,7 +105,7 @@ public class BookResource {
     }
 
     @GET
-    @Path("/{isbn}/author/{id}")
+    @Path("/{isbn}/authors/{id}")
     @Timed(name = "view-author")
     public Response viewAuthor(@PathParam("isbn") LongParam isbn, @PathParam("id") LongParam id)
     {
@@ -114,7 +114,7 @@ public class BookResource {
 	AuthorDtoSingleElement authorResponse = new AuthorDtoSingleElement(author);
 	Book book = bookRepository.getBookByISBN(isbn.get());
 
-	authorResponse.addLink(new LinkDto("view-author", "/book/" + book.getIsbn() + "/author/" + author.getId(), GET));
+	authorResponse.addLink(new LinkDto("view-author", "/book/" + book.getIsbn() + "/authors/" + author.getId(), GET));
 	return Response.status(200).entity(authorResponse).build();
     }
 
@@ -135,9 +135,8 @@ public class BookResource {
 	Book savedBook = bookRepository.saveBook(request);
 
 	for(int i = 0; i < request.getAuthors().size(); ++i) {
-	    authorRepository.saveAuthor(request.getAuthor(i));
+	    request.setAuthor(i, authorRepository.saveAuthor(request.getAuthor(i)));
 	}
-
 	String location = "/books/" + savedBook.getIsbn();
 	LinksDto bookResponse = new LinksDto();
 	bookResponse.addLink(new LinkDto("view-book", location, GET));
@@ -180,7 +179,7 @@ public class BookResource {
     @Path("/{isbn}")
     @Timed(name = "update-book")
 
-	public Response updateBook(@PathParam("isbn") LongParam isbn, @QueryParam("status") String newStatus)
+	public Response updateBook(@PathParam("isbn") LongParam isbn, @QueryParam("status") Book.Status newStatus)
     {
 	Book book = bookRepository.getBookByISBN(isbn.get());
 	book.setStatus(newStatus);

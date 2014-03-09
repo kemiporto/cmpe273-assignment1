@@ -1,11 +1,14 @@
 package edu.sjsu.cmpe.library.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import edu.sjsu.cmpe.library.dto.LinkDto;
+import edu.sjsu.cmpe.library.domain.Book;
 import java.util.List;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
 
+@JsonPropertyOrder({"isbn", "title", "publication-date", "language", "num-pages", "status", "reviews", "author"})
 public class BookResponse {
     @JsonProperty
     private long isbn;
@@ -55,4 +58,5 @@ public class BookResponse {
 	    }
 	}
     }
+
 }

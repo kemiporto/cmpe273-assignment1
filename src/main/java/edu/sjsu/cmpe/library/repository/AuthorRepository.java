@@ -34,11 +34,12 @@ public class AuthorRepository implements AuthorRepositoryInterface{
     public Author saveAuthor(Author newAuthor)
     {
 	checkNotNull(newAuthor, "newAuthor instance must not be null");
-	if(nameInMemoryMap.get(newAuthor.getName()) == null) {
-	    newAuthor.setId(generateId());
-	    authorInMemoryMap.put(newAuthor.getId(), newAuthor);
-	    nameInMemoryMap.put(newAuthor.getName(), newAuthor.getId());
+	if(nameInMemoryMap.get(newAuthor.getName()) != null){
+	    return authorInMemoryMap.get(nameInMemoryMap.get(newAuthor.getName()));
 	}
+	newAuthor.setId(generateId());
+	authorInMemoryMap.put(newAuthor.getId(), newAuthor);
+	nameInMemoryMap.put(newAuthor.getName(), newAuthor.getId());
 	return newAuthor;
     }
 

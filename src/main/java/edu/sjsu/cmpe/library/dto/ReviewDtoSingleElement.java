@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import edu.sjsu.cmpe.library.domain.Review;
 
-@JsonPropertyOrder(alphabetic = true)
+@JsonPropertyOrder({"review", "links"})
 public class ReviewDtoSingleElement extends LinksDto {
     private Review review;
 

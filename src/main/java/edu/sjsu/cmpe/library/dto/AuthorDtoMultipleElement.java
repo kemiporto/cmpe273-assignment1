@@ -6,7 +6,7 @@ import edu.sjsu.cmpe.library.domain.Author;
 
 import java.util.List;
 
-@JsonPropertyOrder(alphabetic = true)
+@JsonPropertyOrder({"authors", "links"})
 
 public class AuthorDtoMultipleElement extends LinksDto {
     private List<Author> authors;

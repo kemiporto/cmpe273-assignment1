@@ -1,18 +1,43 @@
 package edu.sjsu.cmpe.library.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import edu.sjsu.cmpe.library.domain.Review;
 import java.util.List;
 import java.util.ArrayList;
 import javax.validation.constraints.*;
 
+@JsonPropertyOrder({"isbn", "title", "publication-date", "language", "num-pages", "status", "reviews", "authors"})
 public class Book {
     private long isbn;
 
-    private static String AVAILABLE = "available";
-    private static String CHECKED_OUT = "checked-out";
-    private static String IN_QUEUE = "in-queue";
-    private static String LOST = "lost";
+    public static enum Status {
+	available("available"),
+	checked_out("checked-out"),
+	in_queue("in-queue"),
+        lost("lost");
+	private final String text;
+
+	private Status(final String text) {
+	    this.text = text;
+	}
+
+	@Override
+	public String toString() {
+	    return text;
+	}
+
+	@JsonCreator
+	public static Status forValue(String value) {
+	    for (Status s : Status.values()) {
+		if (s.toString().compareToIgnoreCase(value) == 0) {
+		    return s;
+		}
+	    }
+	    throw new IllegalArgumentException("'" + value + "' is not a valid status.");
+	}
+    }
 
     @JsonProperty(required=true)
     @NotNull(message = "must have a defined title value. \n\"title\" : \"book title\".")
@@ -25,11 +50,11 @@ public class Book {
     @JsonProperty(value="num-pages")
     private Integer nPages;
     @JsonProperty
-    private String status = Book.AVAILABLE;
+    private Status status = Status.available;
     @JsonProperty (required = true)
     @NotNull(message = "must have a defined authors value.\n\"authors\" : \n\t[{\"name\" : \"author_1's name\"},..., {\"name\" : \"author_n's name\"}].")
     private List<Author> authors;
-    @JsonProperty
+    @Null(message = "to create review use create-review. Not allowed on the creation of book")
     private List<Review> reviews = null;
     
     /**
@@ -61,7 +86,7 @@ public class Book {
 
     public String getLanguage()
     {
-	return language;
+	return language.toLowerCase();
     }
 
     public Integer getNPages()
@@ -69,14 +94,14 @@ public class Book {
 	return nPages;
     }
 
-    public void setStatus(String status)
+    public void setStatus(Status status)
     {
 	this.status = status;
     }
 
     public String getStatus()
     {
-	return status;
+	return status.toString();
     }
     
     public boolean hasReview()
@@ -105,5 +130,9 @@ public class Book {
 
     public Author getAuthor(int position) {
 	return authors.get(position);
+    }
+
+    public void setAuthor(int position, Author author) {
+	authors.set(position, author);
     }
 }
